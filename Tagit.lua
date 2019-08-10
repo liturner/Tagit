@@ -6,7 +6,7 @@ function Tagit.OnEvent(self, event, ...)
 	if event == "ADDON_LOADED" and ... == "Tagit" then		
 		-- Make sure we have an initialised settings database
 		if Tagit_Database == nil then
-			Tagit_Database = { AddonName = 'Forager', NodesLootedDatabase = {} }
+			Tagit_Database = { AddonName = 'Forager', SchemaVersion = 1, NodesLootedDatabase = {} }
 		end
 		
 		-- Tie onto the "OnClick" for all bag slots
@@ -55,7 +55,7 @@ function Tagit.NoteIDToText(noteID)
 	elseif noteID == 3 then
 		return "Profession"
 	elseif noteID == 4 then
-		return "Collect"
+		return "Quest"
 	else
 		return nil
 	end
