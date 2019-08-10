@@ -1,0 +1,8 @@
+## Interface: 11302
+## Title: Tagit
+## Author: Turner & Pain
+## Version: 1.0.0
+## Notes: Tag your bag items to help remember what they are for!
+## SavedVariables: TAPTI_Settings
+
+Tagit.lua
