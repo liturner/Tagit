@@ -1,8 +1,8 @@
-## Interface: 11302
+## Interface: 30403
 ## Title: Tagit
-## Author: Turner & Pain
+## Author: TurnerTech
 ## Version: 1.0.0
-## Notes: Tag your bag items to help remember what they are for!
+## Notes: Tag your bag items (using alt + click) to help remember what they are for!
 ## SavedVariables: Tagit_Database
 
 Tagit.lua

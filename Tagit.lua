@@ -1,5 +1,7 @@
 local name, Tagit = ...
-local lineAdded = false
+
+Tagit.lineAdded = false
+Tagit.tags = {"Sell", "Auction", "Profession", "Quest"}
 Tagit.MainFrame = CreateFrame('FRAME', nil, UIParent)
 
 function Tagit.OnEvent(self, event, ...) 
@@ -17,46 +19,38 @@ function Tagit.OnEvent(self, event, ...)
 end
 
 function Tagit.OnTooltipSetItem(tooltip, ...)
-	if not lineAdded then
-		tooltipItem = tooltip:GetItem()
-		tooltipNoteID = Tagit_Database[tooltipItem]
-		tooltipNote = Tagit.NoteIDToText(tooltipNoteID)
+	if not Tagit.lineAdded then
+		local tooltipItem = tooltip:GetItem()
+		local tooltipNoteID = Tagit_Database[tooltipItem]
+		local tooltipNote = Tagit.NoteIDToText(tooltipNoteID)
 		
 		if tooltipNote ~= nil then
 			tooltip:AddLine(tooltipNote)
-			lineAdded = true
+			Tagit.lineAdded = true
 		end
 	end
 end
 
 function Tagit.OnTooltipCleared(tooltip, ...)
-   lineAdded = false
+	Tagit.lineAdded = false
 end
 
 -- Update the database and trigger a UI Refresh
 function Tagit.OnItemSelectedForMarking(itemName)
-	if Tagit_Database[itemName] == nil then
+	if not Tagit_Database[itemName] then
 		Tagit_Database[itemName] = 1
-	elseif Tagit_Database[itemName] < 4 then
+	elseif Tagit_Database[itemName] < #Tagit.tags then
 		Tagit_Database[itemName] = Tagit_Database[itemName] + 1
 	else
-		Tagit_Database[itemName] = 0
+		Tagit_Database[itemName] = nil
 	end
 end
 
 -- Return nil or a readable string. Can recieve nil safely
 function Tagit.NoteIDToText(noteID)
-	if noteID == 0 then 
-		return nil
-	elseif noteID == 1 then
-		return "Sell"
-	elseif noteID == 2 then
-		return "Auction"
-	elseif noteID == 3 then
-		return "Profession"
-	elseif noteID == 4 then
-		return "Quest"
-	else
+	if Tagit.tags[noteID] then
+		return Tagit.tags[noteID]
+	else 
 		return nil
 	end
 end
@@ -68,13 +62,12 @@ function Tagit.RegisterAllBagSlotsForOnClick()
 			if _G['ContainerFrame'..b..'Item'..s] then
 				_G['ContainerFrame'..b..'Item'..s]:HookScript('OnClick', function()
 					if IsAltKeyDown() then
-						local bagSize = GetContainerNumSlots(b - 1)
-						local itemID = GetContainerItemID((b - 1), (bagSize - (s - 1)))
+						local bagSize = C_Container.GetContainerNumSlots(b - 1)
+						local itemID = C_Container.GetContainerItemID((b - 1), (bagSize - (s - 1)))
 
 						-- Trigger event if not nil
 						if GetMouseButtonClicked() == 'LeftButton' and itemID ~= nil then
-						
-							itemName = GetItemInfo(itemID)
+							local itemName = GetItemInfo(itemID)
 							Tagit.OnItemSelectedForMarking(itemName)
 						end
 					end
