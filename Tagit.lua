@@ -13,31 +13,30 @@ end
 function Tagit.OnEvent(self, event, ...) 
 	if event == "ADDON_LOADED" and ... == "Tagit" then		
 		-- Make sure we have an initialised settings database
-		local targetVersion = 1
 
-		if Tagit_Database == nil or Tagit_Database.Version < targetVersion then
+		if Tagit_Items == nil then
+			Tagit_Items = {}
+		end
+
+		if Tagit_Tags == nil then
 			-- TODO: This should be a migration. The Items part should remain untouched.
-			Tagit_Database = { 
-				Version = targetVersion,
-				Tags = {
-					{
-						GUID = "6945e800-19fa-4a85-bbe7-265c6768aa62",
-						Label = "Sell"
-					},
-					{
-						GUID = "5d1c2acd-8882-4710-879a-e6c837db92d4",
-						Label = "Auction"
-					},
-					{
-						GUID = "855a860c-f99d-4850-87f1-0d7bc81fa706",
-						Label = "Profession"
-					},
-					{
-						GUID = "ddb8e218-9fc3-4a61-946d-6bbd7bca6a38",
-						Label = "Quest"
-					},
+			Tagit_Tags = { 
+				{
+					GUID = "6945e800-19fa-4a85-bbe7-265c6768aa62",
+					Label = "Sell"
 				},
-				Items = {}
+				{
+					GUID = "5d1c2acd-8882-4710-879a-e6c837db92d4",
+					Label = "Auction"
+				},
+				{
+					GUID = "855a860c-f99d-4850-87f1-0d7bc81fa706",
+					Label = "Profession"
+				},
+				{
+					GUID = "ddb8e218-9fc3-4a61-946d-6bbd7bca6a38",
+					Label = "Quest"
+				}
 			}
 		end
 		
@@ -53,7 +52,7 @@ Tagit.TagFromGUID = function (GUID)
 	if not GUID then
 		return nil
 	end
-	for id, tag in ipairs(Tagit_Database.Tags) do
+	for id, tag in ipairs(Tagit_Tags) do
 		if(tag.GUID == GUID) then
 			Tagit.print("TagFromGUID: " .. tag.GUID .. " = " .. tostring(id))
 			return id, tag
@@ -64,7 +63,7 @@ end
 function Tagit.OnTooltipSetItem(tooltip, ...)
 	if not Tagit.LineAdded then
 		local tooltipItem = tooltip:GetItem()
-		local tooltipNoteID = Tagit_Database.Items[tooltipItem]
+		local tooltipNoteID = Tagit_Items[tooltipItem]
 		local tooltipNote = Tagit.NoteGUIDToText(tooltipNoteID)
 		
 		if tooltipNote ~= nil then
@@ -82,20 +81,20 @@ end
 function Tagit.OnItemSelectedForMarking(itemName)
 	Tagit.print("Marking: " .. itemName)
 
-	local currentTagId, _ = Tagit.TagFromGUID(Tagit_Database.Items[itemName])
+	local currentTagId, _ = Tagit.TagFromGUID(Tagit_Items[itemName])
 
 	Tagit.print("Marking: " .. "Current ID  = " .. tostring(currentTagId))
-	Tagit.print("Marking: " .. "Current Tag = " .. tostring(Tagit_Database.Items[itemName]))
+	Tagit.print("Marking: " .. "Current Tag = " .. tostring(Tagit_Items[itemName]))
 
-	if not Tagit_Database.Items[itemName] then
-		Tagit_Database.Items[itemName] = Tagit_Database.Tags[1].GUID
-	elseif currentTagId < #Tagit_Database.Tags then
-		Tagit_Database.Items[itemName] = Tagit_Database.Tags[currentTagId + 1].GUID
+	if not Tagit_Items[itemName] then
+		Tagit_Items[itemName] = Tagit_Tags[1].GUID
+	elseif currentTagId < #Tagit_Tags then
+		Tagit_Items[itemName] = Tagit_Tags[currentTagId + 1].GUID
 	else
-		Tagit_Database.Items[itemName] = nil
+		Tagit_Items[itemName] = nil
 	end
 
-	Tagit.print("Marking: " .. "New Tag     = " .. tostring(Tagit_Database.Items[itemName]))
+	Tagit.print("Marking: " .. "New Tag     = " .. tostring(Tagit_Items[itemName]))
 
 end
 
@@ -105,9 +104,9 @@ function Tagit.NoteGUIDToText(noteGUID)
 
 	local tagId, tag = Tagit.TagFromGUID(noteGUID)
 
-	if Tagit_Database.Tags[tagId] then
-		Tagit.print("Labeling: " .. tostring(Tagit_Database.Tags[tagId].Label))
-		return Tagit_Database.Tags[tagId].Label
+	if Tagit_Tags[tagId] then
+		Tagit.print("Labeling: " .. tostring(Tagit_Tags[tagId].Label))
+		return Tagit_Tags[tagId].Label
 	else 
 		Tagit.print("Labeling: " .. tostring("Tag not present!!"))
 		return nil
