@@ -1,10 +1,13 @@
-Tagit = {}
+local name, addon = ...
 
-function Tagit.OnLoad(self)
+Tagit = {
+	Debug = false,
+	name = name,
+	LineAdded = false
+}
+
+function Tagit:OnLoad()
 	Tagit.Frame = self
-	self.name = "Tagit"
-	Tagit.LineAdded = false
-	Tagit.Debug = false
 
 	if Tagit_Items == nil then
 		Tagit_Items = {}
@@ -33,7 +36,7 @@ function Tagit.OnLoad(self)
 	end
 	
 	-- Tie onto the "OnClick" for all bag slots
-	Tagit.RegisterAllBagSlotsForOnClick()
+	self:RegisterAllBagSlotsForOnClick()
 
 	GameTooltip:HookScript("OnTooltipSetItem", Tagit.OnTooltipSetItem)
 	GameTooltip:HookScript("OnTooltipCleared", Tagit.OnTooltipCleared)
@@ -41,20 +44,20 @@ function Tagit.OnLoad(self)
 	InterfaceOptions_AddCategory(self)
 end
 
-function Tagit.print(text)
-	if(Tagit.Debug) then
+function Tagit:print(text)
+	if(self.Debug) then
 		print(text)
 	end
 end
 
-Tagit.TagFromGUID = function (GUID)
-	Tagit.print("TagFromGUID: " .. tostring(GUID))
+function Tagit:TagFromGUID(GUID)
+	self:print("TagFromGUID: " .. tostring(GUID))
 	if not GUID then
 		return nil
 	end
 	for id, tag in ipairs(Tagit_Tags) do
 		if(tag.GUID == GUID) then
-			Tagit.print("TagFromGUID: " .. tag.GUID .. " = " .. tostring(id))
+			self:print("TagFromGUID: " .. tag.GUID .. " = " .. tostring(id))
 			return id, tag
 		end
 	end
@@ -64,7 +67,7 @@ function Tagit.OnTooltipSetItem(tooltip, ...)
 	if not Tagit.LineAdded then
 		local tooltipItem = tooltip:GetItem()
 		local tooltipNoteID = Tagit_Items[tooltipItem]
-		local tooltipNote = Tagit.NoteGUIDToText(tooltipNoteID)
+		local tooltipNote = Tagit:NoteGUIDToText(tooltipNoteID)
 		
 		if tooltipNote ~= nil then
 			tooltip:AddLine(tooltipNote)
@@ -78,13 +81,13 @@ function Tagit.OnTooltipCleared(tooltip, ...)
 end
 
 -- Update the database and trigger a UI Refresh
-function Tagit.OnItemSelectedForMarking(itemName)
+function Tagit:OnItemSelectedForMarking(itemName)
 	Tagit.print("Marking: " .. itemName)
 
-	local currentTagId, _ = Tagit.TagFromGUID(Tagit_Items[itemName])
+	local currentTagId, _ = self:TagFromGUID(Tagit_Items[itemName])
 
-	Tagit.print("Marking: " .. "Current ID  = " .. tostring(currentTagId))
-	Tagit.print("Marking: " .. "Current Tag = " .. tostring(Tagit_Items[itemName]))
+	self:print("Marking: " .. "Current ID  = " .. tostring(currentTagId))
+	self:print("Marking: " .. "Current Tag = " .. tostring(Tagit_Items[itemName]))
 
 	if not Tagit_Items[itemName] then
 		Tagit_Items[itemName] = Tagit_Tags[1].GUID
@@ -94,26 +97,26 @@ function Tagit.OnItemSelectedForMarking(itemName)
 		Tagit_Items[itemName] = nil
 	end
 
-	Tagit.print("Marking: " .. "New Tag     = " .. tostring(Tagit_Items[itemName]))
+	self:print("Marking: " .. "New Tag     = " .. tostring(Tagit_Items[itemName]))
 
 end
 
 -- Return nil or a readable string. Can recieve nil safely
-function Tagit.NoteGUIDToText(noteGUID)
-	Tagit.print("Labeling: " .. tostring(noteGUID))
+function Tagit:NoteGUIDToText(noteGUID)
+	self:print("Labeling: " .. tostring(noteGUID))
 
-	local tagId, tag = Tagit.TagFromGUID(noteGUID)
+	local tagId, tag = self:TagFromGUID(noteGUID)
 
 	if Tagit_Tags[tagId] then
-		Tagit.print("Labeling: " .. tostring(Tagit_Tags[tagId].Label))
+		self:print("Labeling: " .. tostring(Tagit_Tags[tagId].Label))
 		return Tagit_Tags[tagId].Label
 	else 
-		Tagit.print("Labeling: " .. tostring("Tag not present!!"))
+		self:print("Labeling: " .. tostring("Tag not present!!"))
 		return nil
 	end
 end
 
-function Tagit.RegisterAllBagSlotsForOnClick()
+function Tagit:RegisterAllBagSlotsForOnClick()
 	for b = 1, 5 do
 		for s = 0, 32 do -- using 32 as a max bag size and therefore a max count for button frame creations, could be an issue, need to know if all bag slot buttons are created on game start and just hidden OR are they created per bag equipped ?
 			-- get global name
@@ -126,7 +129,7 @@ function Tagit.RegisterAllBagSlotsForOnClick()
 						-- Trigger event if not nil
 						if GetMouseButtonClicked() == 'LeftButton' and itemID ~= nil then
 							local itemName = GetItemInfo(itemID)
-							Tagit.OnItemSelectedForMarking(itemName)
+							self:OnItemSelectedForMarking(itemName)
 						end
 					end
 				end)
