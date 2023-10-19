@@ -1,7 +1,7 @@
 ## Interface: 30403
 ## Title: Tagit
 ## Author: TurnerTech
-## Version: 1.0.0
+## Version: 1.0.1
 ## Notes: Tag your bag items (using alt + click) to help remember what they are for!
 ## SavedVariables: Tagit_Database
 

@@ -1,14 +1,44 @@
 local name, Tagit = ...
 
-Tagit.lineAdded = false
-Tagit.tags = {"Sell", "Auction", "Profession", "Quest"}
+Tagit.LineAdded = false
+Tagit.Debug = false
 Tagit.MainFrame = CreateFrame('FRAME', nil, UIParent)
+
+function Tagit.print(text)
+	if(Tagit.Debug) then
+		print(text)
+	end
+end
 
 function Tagit.OnEvent(self, event, ...) 
 	if event == "ADDON_LOADED" and ... == "Tagit" then		
 		-- Make sure we have an initialised settings database
-		if Tagit_Database == nil then
-			Tagit_Database = { AddonName = 'Forager', SchemaVersion = 1, NodesLootedDatabase = {} }
+		local targetVersion = 1
+
+		if Tagit_Database == nil or Tagit_Database.Version < targetVersion then
+			-- TODO: This should be a migration. The Items part should remain untouched.
+			Tagit_Database = { 
+				Version = targetVersion,
+				Tags = {
+					{
+						GUID = "6945e800-19fa-4a85-bbe7-265c6768aa62",
+						Label = "Sell"
+					},
+					{
+						GUID = "5d1c2acd-8882-4710-879a-e6c837db92d4",
+						Label = "Auction"
+					},
+					{
+						GUID = "855a860c-f99d-4850-87f1-0d7bc81fa706",
+						Label = "Profession"
+					},
+					{
+						GUID = "ddb8e218-9fc3-4a61-946d-6bbd7bca6a38",
+						Label = "Quest"
+					},
+				},
+				Items = {}
+			}
 		end
 		
 		-- Tie onto the "OnClick" for all bag slots
@@ -18,39 +48,68 @@ function Tagit.OnEvent(self, event, ...)
 	end
 end
 
+Tagit.TagFromGUID = function (GUID)
+	Tagit.print("TagFromGUID: " .. tostring(GUID))
+	if not GUID then
+		return nil
+	end
+	for id, tag in ipairs(Tagit_Database.Tags) do
+		if(tag.GUID == GUID) then
+			Tagit.print("TagFromGUID: " .. tag.GUID .. " = " .. tostring(id))
+			return id, tag
+		end
+	end
+end
+
 function Tagit.OnTooltipSetItem(tooltip, ...)
-	if not Tagit.lineAdded then
+	if not Tagit.LineAdded then
 		local tooltipItem = tooltip:GetItem()
-		local tooltipNoteID = Tagit_Database[tooltipItem]
-		local tooltipNote = Tagit.NoteIDToText(tooltipNoteID)
+		local tooltipNoteID = Tagit_Database.Items[tooltipItem]
+		local tooltipNote = Tagit.NoteGUIDToText(tooltipNoteID)
 		
 		if tooltipNote ~= nil then
 			tooltip:AddLine(tooltipNote)
-			Tagit.lineAdded = true
+			Tagit.LineAdded = true
 		end
 	end
 end
 
 function Tagit.OnTooltipCleared(tooltip, ...)
-	Tagit.lineAdded = false
+	Tagit.LineAdded = false
 end
 
 -- Update the database and trigger a UI Refresh
 function Tagit.OnItemSelectedForMarking(itemName)
-	if not Tagit_Database[itemName] then
-		Tagit_Database[itemName] = 1
-	elseif Tagit_Database[itemName] < #Tagit.tags then
-		Tagit_Database[itemName] = Tagit_Database[itemName] + 1
+	Tagit.print("Marking: " .. itemName)
+
+	local currentTagId, _ = Tagit.TagFromGUID(Tagit_Database.Items[itemName])
+
+	Tagit.print("Marking: " .. "Current ID  = " .. tostring(currentTagId))
+	Tagit.print("Marking: " .. "Current Tag = " .. tostring(Tagit_Database.Items[itemName]))
+
+	if not Tagit_Database.Items[itemName] then
+		Tagit_Database.Items[itemName] = Tagit_Database.Tags[1].GUID
+	elseif currentTagId < #Tagit_Database.Tags then
+		Tagit_Database.Items[itemName] = Tagit_Database.Tags[currentTagId + 1].GUID
 	else
-		Tagit_Database[itemName] = nil
+		Tagit_Database.Items[itemName] = nil
 	end
+
+	Tagit.print("Marking: " .. "New Tag     = " .. tostring(Tagit_Database.Items[itemName]))
+
 end
 
 -- Return nil or a readable string. Can recieve nil safely
-function Tagit.NoteIDToText(noteID)
-	if Tagit.tags[noteID] then
-		return Tagit.tags[noteID]
+function Tagit.NoteGUIDToText(noteGUID)
+	Tagit.print("Labeling: " .. tostring(noteGUID))
+
+	local tagId, tag = Tagit.TagFromGUID(noteGUID)
+
+	if Tagit_Database.Tags[tagId] then
+		Tagit.print("Labeling: " .. tostring(Tagit_Database.Tags[tagId].Label))
+		return Tagit_Database.Tags[tagId].Label
 	else 
+		Tagit.print("Labeling: " .. tostring("Tag not present!!"))
 		return nil
 	end
 end
