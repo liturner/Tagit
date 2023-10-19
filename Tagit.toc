@@ -6,4 +6,4 @@
 ## SavedVariables: Tagit_Tags
 ## SavedVariablesPerCharacter: Tagit_Items
 
-Tagit.lua
+Tagit.xml

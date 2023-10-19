@@ -1,49 +1,49 @@
-local name, Tagit = ...
+Tagit = {}
 
-Tagit.LineAdded = false
-Tagit.Debug = false
-Tagit.MainFrame = CreateFrame('FRAME', nil, UIParent)
+function Tagit.OnLoad(self)
+	Tagit.Frame = self
+	self.name = "Tagit"
+	Tagit.LineAdded = false
+	Tagit.Debug = false
+
+	if Tagit_Items == nil then
+		Tagit_Items = {}
+	end
+
+	if Tagit_Tags == nil then
+		-- TODO: This should be a migration. The Items part should remain untouched.
+		Tagit_Tags = { 
+			{
+				GUID = "6945e800-19fa-4a85-bbe7-265c6768aa62",
+				Label = "Sell"
+			},
+			{
+				GUID = "5d1c2acd-8882-4710-879a-e6c837db92d4",
+				Label = "Auction"
+			},
+			{
+				GUID = "855a860c-f99d-4850-87f1-0d7bc81fa706",
+				Label = "Profession"
+			},
+			{
+				GUID = "ddb8e218-9fc3-4a61-946d-6bbd7bca6a38",
+				Label = "Quest"
+			}
+		}
+	end
+	
+	-- Tie onto the "OnClick" for all bag slots
+	Tagit.RegisterAllBagSlotsForOnClick()
+
+	GameTooltip:HookScript("OnTooltipSetItem", Tagit.OnTooltipSetItem)
+	GameTooltip:HookScript("OnTooltipCleared", Tagit.OnTooltipCleared)
+
+	InterfaceOptions_AddCategory(self)
+end
 
 function Tagit.print(text)
 	if(Tagit.Debug) then
 		print(text)
-	end
-end
-
-function Tagit.OnEvent(self, event, ...) 
-	if event == "ADDON_LOADED" and ... == "Tagit" then		
-		-- Make sure we have an initialised settings database
-
-		if Tagit_Items == nil then
-			Tagit_Items = {}
-		end
-
-		if Tagit_Tags == nil then
-			-- TODO: This should be a migration. The Items part should remain untouched.
-			Tagit_Tags = { 
-				{
-					GUID = "6945e800-19fa-4a85-bbe7-265c6768aa62",
-					Label = "Sell"
-				},
-				{
-					GUID = "5d1c2acd-8882-4710-879a-e6c837db92d4",
-					Label = "Auction"
-				},
-				{
-					GUID = "855a860c-f99d-4850-87f1-0d7bc81fa706",
-					Label = "Profession"
-				},
-				{
-					GUID = "ddb8e218-9fc3-4a61-946d-6bbd7bca6a38",
-					Label = "Quest"
-				}
-			}
-		end
-		
-		-- Tie onto the "OnClick" for all bag slots
-		Tagit.RegisterAllBagSlotsForOnClick()		
-		
-		self:UnregisterEvent("ADDON_LOADED")
 	end
 end
 
@@ -134,8 +134,3 @@ function Tagit.RegisterAllBagSlotsForOnClick()
 		end
 	end
 end
-
-Tagit.MainFrame:RegisterEvent('ADDON_LOADED')
-Tagit.MainFrame:SetScript('OnEvent', Tagit.OnEvent)
-GameTooltip:HookScript("OnTooltipSetItem", Tagit.OnTooltipSetItem)
-GameTooltip:HookScript("OnTooltipCleared", Tagit.OnTooltipCleared)
