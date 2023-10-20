@@ -1,5 +1,7 @@
 {
     "Lua.diagnostics.globals": [
-        "InterfaceOptions_AddCategory"
+        "InterfaceOptions_AddCategory",
+        "toString",
+        "SlashCmdList"
     ]
 }

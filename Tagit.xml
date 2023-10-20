@@ -2,20 +2,18 @@
     xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
     xmlns="http://www.blizzard.com/wow/ui/"
     xsi:schemaLocation="http://www.blizzard.com/wow/ui/ https://raw.githubusercontent.com/Meorawr/wow-ui-schema/main/UI.xsd">
+    
     <Script file="Tagit.lua" />
-    <Frame name="Tagit_Frame" mixin="Tagit" hidden="true" parent="UIParent" toplevel="true">
+    
+    <Frame name="TagitAddon" mixin="TagitMixin" hidden="true" parent="UIParent" toplevel="true">
         <Scripts>
             <OnLoad method="OnLoad"/>
         </Scripts>
-        <Frames>
-            <EditBox name="AddTagEntryBox">
-                <Size x="100" y="32"/>
-                <Anchors>
-                    <Anchor point="LEFT">
-                        <Offset x="50" y="0" />
-                    </Anchor>
-                </Anchors>
-            </EditBox>
-        </Frames>
+        <Layers>
+            <Layer level="ARTWORK">
+                <FontString></FontString>
+            </Layer>
+        </Layers>
     </Frame>
+
 </Ui>
