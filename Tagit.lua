@@ -1,4 +1,5 @@
 local name, addon = ...
+local util = addon.TurnerTech
 
 TagitMixin = {
 	Debug = false,
@@ -48,17 +49,14 @@ end
 
 -- This is only intended for an incoming slash command. It splits by comma
 -- and passes the ars on to "NewTag"
-function TagitMixin:SlashNewTag(arg)
-	local args = {}
-	for word in string.gmatch(arg, '([^,]+)') do
-		table.insert(args, word)
-	end
+function TagitMixin:SlashNewTag(argString)
+	local args = util:SplitArgs(argString)
 	return self:NewTag(args[1], args[2])
 end
 
 function TagitMixin:NewTag(label, id)
 	if(not label) then
-		print("ToDo: Show Error")
+		UIErrorsFrame:AddExternalErrorMessage("Cannot add a tag with no label!")
 		return
 	end
 
