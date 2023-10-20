@@ -6,6 +6,10 @@
 ## SavedVariables: Tagit_Tags
 ## SavedVariablesPerCharacter: Tagit_Items
 
+# Innactive code. Utilities or pure mixin functions.
 Callbacks.lua
 Utilities.lua
+Database.lua
+
+# Active code. The XML file links other Script files on which Frames etc. are explicitely dependant.
 Tagit.xml
