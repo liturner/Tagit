@@ -12,13 +12,17 @@
         </Scripts>
     </Frame>
 
-    <Frame name="Tagit_OptionsPanel" mixin="TagitOptionsMixin" hidden="true" parent="UIParent" toplevel="true">
+    <Frame name="Tagit_OptionsPanel" mixin="TagitOptionsMixin">
         <Scripts>
             <OnLoad method="OnLoad"/>
         </Scripts>
         <Layers>
-            <Layer level="ARTWORK">
-                <FontString></FontString>
+            <Layer level="OVERLAY">
+                <FontString parentKey="TitleFontString" inherits="GameFontNormalLarge" text="Tagit">
+                    <Anchors>
+                        <Anchor point="TOPLEFT" x="12" y="0"/>
+                    </Anchors>
+                </FontString>
             </Layer>
         </Layers>
     </Frame>
