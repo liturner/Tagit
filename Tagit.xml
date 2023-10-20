@@ -18,13 +18,31 @@
         </Scripts>
         <Layers>
             <Layer level="OVERLAY">
-                <FontString parentKey="TitleFontString" inherits="GameFontNormalLarge" text="Tagit">
+                <FontString parentKey="TitleFontString" inherits="GameFontNormalLarge" text="Tagit" justifyH="LEFT" justifyV="TOP">
                     <Anchors>
                         <Anchor point="TOPLEFT" x="12" y="0"/>
                     </Anchors>
+                    <Size y="40"/>
                 </FontString>
             </Layer>
         </Layers>
+        <Frames>
+            <EditBox parentKey="AddKeyEditBox" mixin="AddKeyEditBoxMixin" inherits="InputBoxTemplate" autoFocus="false">
+                <Anchors>
+                    <Anchor point="TOPLEFT" relativeKey="$parent.TitleFontString" relativePoint="BOTTOMLEFT" x="0" y="0"/>
+                </Anchors>
+                <Size x="200" y="20"/>
+                <Scripts>
+                    <OnTextChanged method="OnTextChanged"/>
+                </Scripts>
+            </EditBox>
+            <Button parentKey="AddKeyButton" inherits="UIPanelButtonTemplate" text="Add">
+                <Anchors>
+                    <Anchor point="TOPLEFT" relativeKey="$parent.AddKeyEditBox" relativePoint="TOPRIGHT" x="0" y="0"/>
+                </Anchors>
+                <Size x="80" y="20"/>
+            </Button>
+        </Frames>
     </Frame>
 
 </Ui>

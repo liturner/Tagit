@@ -3,6 +3,7 @@
         "InterfaceOptions_AddCategory",
         "toString",
         "SlashCmdList",
-        "UIErrorsFrame"
+        "UIErrorsFrame",
+        "Add"
     ]
 }
