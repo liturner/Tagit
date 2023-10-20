@@ -19,9 +19,9 @@ AddKeyEditBoxMixin = {}
 
 function AddKeyEditBoxMixin:OnTextChanged(userInput)
 	if(self:IsTagExisting()) then
-		print("Exists")
+		self:SetTextColor(1.0, 0, 0)
 	else
-		print("Available")
+		self:SetTextColor(1.0, 1.0, 1.0)
 	end
 end
 
