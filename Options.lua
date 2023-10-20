@@ -5,13 +5,20 @@ TagitOptionsMixin = {
 }
 
 function TagitOptionsMixin:OnLoad()
-	self.AddKeyButton:SetScript("OnClick", function() self:OnAddClicked() end)
+	self.AddKeyButton:HookScript("OnClick", function() self:OnAddClicked() end)
+	self.AddKeyEditBox:HookScript("OnTextChanged", function(editBox) self:OnTextChanged(editBox) end)
 	InterfaceOptions_AddCategory(self)
 end
 
 function TagitOptionsMixin:OnAddClicked()
-	if(self.AddKeyEditBox:IsTagExisting()) then
-		UIErrorsFrame:AddExternalErrorMessage("Cannot add a tag. It already exists!")
+
+end
+
+function TagitOptionsMixin:OnTextChanged(editBox)
+	if(editBox:IsTagExisting()) then
+		self.AddKeyButton:SetEnabled(false)
+	else
+		self.AddKeyButton:SetEnabled(true)
 	end
 end
 
