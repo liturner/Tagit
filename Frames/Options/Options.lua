@@ -5,8 +5,11 @@ TagitOptionsMixin = {
 }
 
 function TagitOptionsMixin:OnLoad()
+	self.TestListView:SetDataProvider(Addon.TagList)
+
 	self.AddKeyButton:HookScript("OnClick", function() self:OnAddClicked() end)
 	self.AddKeyEditBox:HookScript("OnTextChanged", function(editBox) self:OnTextChanged(editBox) end)
+
 	InterfaceOptions_AddCategory(self)
 end
 

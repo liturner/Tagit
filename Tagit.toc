@@ -1,15 +1,16 @@
 ## Interface: 30403
 ## Title: Tagit
 ## Author: TurnerTech
-## Version: 1.0.1
+## Version: 1.0.2
 ## Notes: Tag your bag items (using alt + click) to help remember what they are for!
 ## SavedVariables: Tagit_Tags
 ## SavedVariablesPerCharacter: Tagit_Items
 
-# Innactive code. Utilities or pure mixin functions.
-Callbacks.lua
-Utilities.lua
-Database.lua
+Lua\Utilities.lua
+Lua\Database.lua
 
-# Active code. The XML file links other Script files on which Frames etc. are explicitely dependant.
-Tagit.xml
+Widgets\ListView\ListView.xml
+
+Frames\Options\Options.xml
+
+Addon.xml

@@ -1,6 +1,11 @@
 local _, Addon = ...
 
+-- The "API" for working with the database.
 Addon.Tags = {}
+
+-- Observable List of Tags available for use.
+Addon.TagList = CreateFromMixins(DataProviderMixin)
+Addon.TagList:Init({})
 
 function Addon.Tags:Initialise()
     if Tagit_Items == nil then
@@ -10,31 +15,29 @@ function Addon.Tags:Initialise()
     if Tagit_Tags == nil then
         Tagit_Tags = {
             {
-                GUID = "6945e800-19fa-4a85-bbe7-265c6768aa62",
+                GUID = 0,
                 Label = "Sell"
             },
             {
-                GUID = "5d1c2acd-8882-4710-879a-e6c837db92d4",
+                GUID = 1,
                 Label = "Auction"
             },
             {
-                GUID = "855a860c-f99d-4850-87f1-0d7bc81fa706",
+                GUID = 2,
                 Label = "Profession"
             },
             {
-                GUID = "ddb8e218-9fc3-4a61-946d-6bbd7bca6a38",
+                GUID = 3,
                 Label = "Quest"
             }
         }
     end
+    Addon.TagList:Init(Tagit_Tags)
+    Tagit_Tags = Addon.TagList:GetCollection()
 end
 
 function Addon.Tags:GetTagIndexFromTagGUID(guid)
-    for idx, tag in ipairs(Tagit_Tags) do
-        if(tag.GUID and tag.GUID == guid) then
-            return idx
-        end
-    end
+    return Addon.TagList:FindIndexByPredicate(function(tag) return tag.GUID == guid end)
 end
 
 function Addon.Tags:GetTagIndexFromItemID(itemID)
@@ -46,36 +49,26 @@ function Addon.Tags:GetTagIndexFromItemID(itemID)
 end
 
 function Addon.Tags:GetTagFromTagGUID(guid)
-    for _, tag in ipairs(Tagit_Tags) do
-        if(tag.GUID and tag.GUID == guid) then
-            return tag
-        end
-    end
+    return Addon.TagList:FindElementDataByPredicate(function(tag) return tag.GUID == guid end)
 end
 
 function Addon.Tags:GetTagFromTagLabel(label)
-    for _, tag in ipairs(Tagit_Tags) do
-        if(tag.Label and tag.Label == label) then
-            return tag
-        end
-    end
+    return Addon.TagList:FindElementDataByPredicate(function(tag) return tag.Label == label end)
 end
 
-function Addon.Tags:DeleteTagFromTagGUID(guid)
-    local index = Addon.Tags:GetTagIndexFromTagGUID(guid)
-    if(index) then
-        table.remove(Tagit_Tags, index)
-    end
-end
-
-function Addon.Tags:GetTagFromTagIndex(idx)
-    return Tagit_Tags[idx]
+function Addon.Tags:GetTagFromTagIndex(index)
+    return Addon.TagList:Find(index)
 end
 
 -- Adds a new Tag to the Database
 -- Will generate a unique GUID if none was provided
 -- Will overwrite an existing label if existing GUID is supplied
 function Addon.Tags:Put(guid, label)
+    local tag = Addon.Tags:GetTagFromTagLabel(label)
+    if(not guid and tag) then
+        UIErrorsFrame:AddExternalErrorMessage("A Tag with that label already exists!")
+        return
+    end
     if(not guid) then
         while(not guid or self:GetTagFromTagGUID(guid)) do
             -- Hint: The first 50 numbers are just reserved GUIDs
@@ -83,18 +76,19 @@ function Addon.Tags:Put(guid, label)
         end
     end
     local idx = self:GetTagIndexFromTagGUID(guid)
+    tag = {GUID=guid, Label=label}
     if(idx) then
-        table.remove(Tagit_Tags, idx)
-        table.insert(Tagit_Tags, idx, {GUID=guid, Label=label})
+        Addon.TagList:RemoveIndex(idx)
+        Addon.TagList:InsertAtIndex(tag, idx)
     else
-        table.insert(Tagit_Tags, {GUID=guid, Label=label})
+        Addon.TagList:Insert(tag)
     end
 end
 
 function Addon.Tags:SetItemIDFromTagIndex(itemID, index)
     Addon.Util:Print("Tagging Item: " .. tostring(itemID) .. " With Index: " .. tostring(index))
-    if index > 0 and index <= #Tagit_Tags then
-        Tagit_Items[itemID] = Tagit_Tags[index].GUID
+    if index > 0 and index <= Addon.TagList:GetSize() then
+        Tagit_Items[itemID] = Addon.TagList:Find(index).GUID
     else
         Tagit_Items[itemID] = nil
     end
@@ -102,27 +96,10 @@ end
 
 -- Returns a complete Tag (or nil) from the database based on the provided item
 function Addon.Tags:GetTagFromItemID(itemID)
-    return self:GetTagFromTagGUID(Tagit_Items[itemID])
+    return Addon.TagList:FindElementDataByPredicate(function(tag) return tag.GUID == Tagit_Items[itemID] end)
 end
 
 function Addon.Tags:GetTagFromItem(item)
-    Addon.Tags:FixItem(item)
     local itemID, itemType, itemSubType, itemEquipLoc, icon, classID, subclassID = GetItemInfoInstant(item)
     return self:GetTagFromItemID(itemID)
-end
-
--- Delete this function once the DB has no Name keys.
--- It currently just replaces the old name based itemId with an ItemId.
-function Addon.Tags:FixItem(item)
-    if not item then
-        return
-    end
-
-    local itemID, itemType, itemSubType, itemEquipLoc, icon, classID, subclassID = GetItemInfoInstant(item)
-    local itemName = GetItemInfo(item)
-
-    if(Tagit_Items[itemName]) then
-        Tagit_Items[itemID] = Tagit_Items[itemName]
-        Tagit_Items[itemName] = nil
-    end
 end

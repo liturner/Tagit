@@ -4,9 +4,14 @@ TagitAddonMixin = {
     LineAdded = false
 }
 
-function TagitAddonMixin:OnLoad()
-    Addon.Tags:Initialise()
+function TagitAddonMixin:OnEvent(event, ...)
+    print("OnEvent")
+	if event == "PLAYER_ENTERING_WORLD" then
+		TagitAddonMixin:OnPlayerEnteringWorld()
+	end
+end
 
+function TagitAddonMixin:OnLoad()
     SLASH_ADDTAG1 = "/addtag"
     SlashCmdList["ADDTAG"] = function(label) self:SlashNewTag(label) end
 
@@ -16,8 +21,15 @@ function TagitAddonMixin:OnLoad()
     -- Tie onto the "OnClick" for all bag slots
     self:RegisterAllBagSlotsForOnClick()
 
+    self:RegisterEvent("PLAYER_ENTERING_WORLD")
+
     GameTooltip:HookScript("OnTooltipSetItem", TagitAddonMixin.OnTooltipSetItem)
     GameTooltip:HookScript("OnTooltipCleared", TagitAddonMixin.OnTooltipCleared)
+end
+
+function TagitAddonMixin:OnPlayerEnteringWorld()
+    print("EnteringWorld")
+    Addon.Tags:Initialise()
 end
 
 -- This is only intended for an incoming slash command. It splits by comma
@@ -36,11 +48,11 @@ function TagitAddonMixin:NewTag(label, guid)
 end
 
 function TagitAddonMixin:RemoveTag(label)
-    local tag = Addon.Tags:GetTagFromTagLabel(label)
-    if(not tag) then
+    local predicate = function(tag) return tag.Label == label end
+    if(not Addon.TagList:ContainsByPredicate(predicate)) then
         UIErrorsFrame:AddExternalErrorMessage("Cannot find a tag '" .. label .. "'")
     end
-    Addon.Tags:DeleteTagFromTagGUID(tag.GUID)
+    Addon.TagList:RemoveByPredicate(predicate)
 end
 
 function TagitAddonMixin.OnTooltipSetItem(tooltip, ...)

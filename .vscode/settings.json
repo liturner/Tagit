@@ -4,6 +4,15 @@
         "toString",
         "SlashCmdList",
         "UIErrorsFrame",
-        "Add"
+        "Add",
+        "ScrollUtil",
+        "CreateDataProvider",
+        "CreateScrollBoxListLinearView",
+        "GenerateClosure",
+        "CreateAnchor",
+        "GameTooltip_SetDefaultAnchor",
+        "DressUpItemLink",
+        "HandleModifiedItemClick",
+        "DataProviderMixin"
     ]
 }
