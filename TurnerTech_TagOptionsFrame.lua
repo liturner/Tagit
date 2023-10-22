@@ -1,7 +1,7 @@
 local name, Addon = ...
 
 TagitOptionsMixin = {
-	name = name,
+	name = "Tags",
 }
 
 function TagitOptionsMixin:OnLoad()
@@ -36,5 +36,5 @@ function AddKeyEditBoxMixin:OnTextChanged(userInput)
 end
 
 function AddKeyEditBoxMixin:IsTagExisting()
-	return Addon.Tags:GetTagFromTagLabel(self:GetText()) ~= nil
+	return Addon.TagList:FindElementDataByTagLabel(self:GetText()) ~= nil
 end

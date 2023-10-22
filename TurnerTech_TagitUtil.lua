@@ -1,6 +1,6 @@
 local name, addon = ...
 
-addon.Debug = false
+addon.Debug = true
 addon.Util = {}
 
 function addon.Util:SplitArgs(argString)

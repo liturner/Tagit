@@ -3,9 +3,9 @@
     xmlns="http://www.blizzard.com/wow/ui/"
     xsi:schemaLocation="http://www.blizzard.com/wow/ui/ https://raw.githubusercontent.com/Meorawr/wow-ui-schema/main/UI.xsd">
     
-    <Script file="Addon.lua" />
+    <Script file="TurnerTech_Tags.lua" />
     
-    <Frame name="Tagit_Addon" mixin="TagitAddonMixin" parent="UIParent">
+    <Frame name="TurnerTech_Tags" mixin="TagitAddonMixin" parent="UIParent">
         <Scripts>
             <OnLoad method="OnLoad"/>
             <OnEvent method="OnEvent"/>

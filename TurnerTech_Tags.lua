@@ -12,13 +12,18 @@ function TagitAddonMixin:OnEvent(event, ...)
 end
 
 function TagitAddonMixin:OnLoad()
+    Addon.Util:Print("Tagit OnLoad")
+
+    -- Slash Command
+
     SLASH_ADDTAG1 = "/addtag"
     SlashCmdList["ADDTAG"] = function(label) self:SlashNewTag(label) end
 
     SLASH_REMOVETAG1 = "/removetag"
     SlashCmdList["REMOVETAG"] = function(label) self:RemoveTag(label) end
 
-    -- Tie onto the "OnClick" for all bag slots
+    -- Callbacks / Events etc.
+
     self:RegisterAllBagSlotsForOnClick()
 
     self:RegisterEvent("PLAYER_ENTERING_WORLD")
@@ -28,8 +33,34 @@ function TagitAddonMixin:OnLoad()
 end
 
 function TagitAddonMixin:OnPlayerEnteringWorld()
-    print("EnteringWorld")
-    Addon.Tags:Initialise()
+    -- Data Models (Fill from stored variables)
+
+    if Tagit_Items == nil then
+        Tagit_Items = {}
+    end
+
+    if Tagit_Tags == nil then
+        Tagit_Tags = {
+            {
+                GUID = 0,
+                Label = "Sell"
+            },
+            {
+                GUID = 1,
+                Label = "Auction"
+            },
+            {
+                GUID = 2,
+                Label = "Profession"
+            },
+            {
+                GUID = 3,
+                Label = "Quest"
+            }
+        }
+    end
+    Addon.TagList:Init(Tagit_Tags)
+    Tagit_Tags = Addon.TagList:GetCollection()
 end
 
 -- This is only intended for an incoming slash command. It splits by comma
@@ -44,7 +75,7 @@ function TagitAddonMixin:NewTag(label, guid)
         UIErrorsFrame:AddExternalErrorMessage("Cannot add a tag with no label!")
         return
     end
-    Addon.Tags:Put(guid, label)
+    Addon.TagList:InsertTag(guid, label)
 end
 
 function TagitAddonMixin:RemoveTag(label)
@@ -57,7 +88,7 @@ end
 
 function TagitAddonMixin.OnTooltipSetItem(tooltip, ...)
     if not TagitAddonMixin.LineAdded then
-        local tag = Addon.Tags:GetTagFromItem(tooltip:GetItem())
+        local tag = Addon.TagList:FindElementDataByItem(tooltip:GetItem())
 
         if(tag) then
             tooltip:AddLine(tag.Label)
@@ -72,11 +103,11 @@ end
 
 -- Update the database and trigger a UI Refresh
 function TagitAddonMixin:OnItemSelectedForMarking(itemID)
-    local tagIndex = Addon.Tags:GetTagIndexFromItemID(itemID)
+    local tagIndex = Addon.TagList:FindIndexByItemID(itemID)
     if(not tagIndex) then
-        Addon.Tags:SetItemIDFromTagIndex(itemID, 1)
+        Addon.TagList:SetItemIDFromTagIndex(itemID, 1)
     else
-        Addon.Tags:SetItemIDFromTagIndex(itemID, tagIndex + 1)
+        Addon.TagList:SetItemIDFromTagIndex(itemID, tagIndex + 1)
     end
 end
 
