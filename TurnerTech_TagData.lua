@@ -46,8 +46,10 @@ function TagListDataProviderMixin:InsertTag(guid, label)
     if(idx) then
         self:RemoveIndex(idx)
         self:InsertAtIndex(tag, idx)
+        return tag
     else
         self:Insert(tag)
+        return tag
     end
 end
 
