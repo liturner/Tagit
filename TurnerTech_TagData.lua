@@ -23,7 +23,9 @@ function TagListDataProviderMixin:FindElementDataByItemID(itemID)
 end
 
 function TagListDataProviderMixin:FindElementDataByItem(item)
-    return self:FindElementDataByItemID(GetItemInfoInstant(item))
+    if(item) then
+        return self:FindElementDataByItemID(GetItemInfoInstant(item))
+    end
 end
 
 -- Adds a new Tag to the Database
@@ -48,7 +50,7 @@ function TagListDataProviderMixin:InsertTag(guid, label)
         self:InsertAtIndex(tag, idx)
         return tag
     else
-        self:Insert(tag)
+        self:w(tag)
         return tag
     end
 end
