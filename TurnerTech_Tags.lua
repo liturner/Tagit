@@ -66,10 +66,10 @@ end
 
 local function OnTooltipSetItem(tooltip, ...)
     if not LineAdded then
-        local tag = TurnerTech_Tags:FindTagsByItem(tooltip:GetItem())
+        local tag = TurnerTech_Tags:FindTag(tooltip:GetItem())
 
-        if(tag[1]) then
-            tooltip:AddLine(tag[1].Label)
+        if(tag) then
+            tooltip:AddLine(tag.Label)
             LineAdded = true
         end
     end
@@ -79,9 +79,9 @@ end
 function OnItemSelectedForMarking(itemID)
     local tagIndex = Addon.TagList:FindIndexByItemID(itemID)
     if(not tagIndex) then
-        Addon.TagList:SetItemIDFromTagIndex(itemID, 1)
+        Addon.TagList:SetItemFromTagIndex(itemID, 1)
     else
-        Addon.TagList:SetItemIDFromTagIndex(itemID, tagIndex + 1)
+        Addon.TagList:SetItemFromTagIndex(itemID, tagIndex + 1)
     end
 end
 
@@ -145,8 +145,18 @@ end
 ---where one does not exist. If an unknown Tag ID is used, then the item will
 ---still be tagged!
 ---@param item number|string Item ID, Link or Name.
----@param tag number|string|table Tag ID, Label or instance
-function TagitAddonMixin:TagItem(item, tag)
+---@param tagKey number|string|table|nil Tag ID, Label or instance
+function TagitAddonMixin:TagItem(item, tagKey)
+    local foundTag = self:FindTag(tagKey)
+    if(not foundTag and type(tagKey) == "string") then
+        foundTag = self:CreateTag(tagKey, nil)
+    end
+
+    Addon.TagList:FindElementDataByItem(item)
+end
+
+function TagitAddonMixin:RemoveTag(item)
+    self:TagItem(item, nil)
 end
 
 ---Removes all tags with the provided label. This should only be one tag, but
@@ -160,9 +170,25 @@ function TagitAddonMixin:DeleteTagsByLabel(label)
     end
 end
 
----Gets a table of tags assigned to a particular item.
----@param item number|string Item ID, Link or Name.
----@return table tags A list of tags associated to this item.
-function TagitAddonMixin:FindTagsByItem(item)
-    return {Addon.TagList:FindElementDataByItem(item)}
+---Gets a tag assigned to a particular key. The key may be an Item, ItemID,
+---tag.GUID or tag.Label.
+---@param key number|string|table|nil Item ID, Link, Name, Tag, Tag Label or Tag ID.
+---@return table|nil tags A tag associated to this item.
+function TagitAddonMixin:FindTag(key)
+    if(not key) then
+        return
+    end
+    local foundTag = Addon.TagList:FindElementDataByTagGUID(key)
+    if(not foundTag) then
+        foundTag = Addon.TagList:FindElementDataByTagLabel(key)
+    end
+    if(not foundTag) then
+        foundTag = Addon.TagList:FindElementDataByItem(key)
+    end
+    if(not foundTag and type(key) == "table") then
+        foundTag = Addon.TagList:FindElementDataByTagGUID(key.GUID)
+    end
+    return foundTag
 end
+
+

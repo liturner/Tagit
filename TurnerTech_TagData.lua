@@ -55,11 +55,26 @@ function TagListDataProviderMixin:InsertTag(guid, label)
     end
 end
 
-function TagListDataProviderMixin:SetItemIDFromTagIndex(itemID, index)
-    Addon.Util:Print("Tagging Item: " .. tostring(itemID) .. " With Index: " .. tostring(index))
-    if index > 0 and index <= Addon.TagList:GetSize() then
-        Tagit_Items[itemID] = Addon.TagList:Find(index).GUID
+function TagListDataProviderMixin:SetItemFromTagIndex(item, index)
+    if(not item) then
+        return
+    end
+    local itemID = GetItemInfoInstant(item)
+    if(index > 0 and index <= Addon.TagList:GetSize()) then
+        TagListDataProviderMixin:SetItemFromTag(itemID, Addon.TagList:Find(index))
     else
+        TagListDataProviderMixin:SetItemFromTag(itemID, nil)
+    end
+end
+
+function TagListDataProviderMixin:SetItemFromTag(item, tag)
+    if(not item) then
+        return
+    end
+    local itemID = GetItemInfoInstant(item)
+    if(itemID and tag and tag.GUID) then
+        Tagit_Items[itemID] = tag.GUID
+    elseif(itemID and tag == nil) then
         Tagit_Items[itemID] = nil
     end
 end
