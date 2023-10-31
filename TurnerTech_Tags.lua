@@ -97,7 +97,6 @@ TagitAddonMixin:GenerateCallbackEvents({
 })
 
 function TagitAddonMixin:OnEvent(event, ...)
-    print("OnEvent")
 	if event == "PLAYER_ENTERING_WORLD" then
 		OnPlayerEnteringWorld()
 	end
@@ -147,12 +146,13 @@ end
 ---@param item number|string Item ID, Link or Name.
 ---@param tagKey number|string|table|nil Tag ID, Label or instance
 function TagitAddonMixin:TagItem(item, tagKey)
-    local foundTag = self:FindTag(tagKey)
-    if(not foundTag and type(tagKey) == "string") then
-        foundTag = self:CreateTag(tagKey, nil)
+    local tag = self:FindTag(tagKey)
+    if(not tag and type(tagKey) == "string") then
+        tag = self:CreateTag(tagKey, nil)
     end
-
-    Addon.TagList:FindElementDataByItem(item)
+    if(tag) then
+        Addon.TagList:SetItemFromTag(item, tag)
+    end
 end
 
 function TagitAddonMixin:RemoveTag(item)

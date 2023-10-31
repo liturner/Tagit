@@ -14,6 +14,19 @@
         "DressUpItemLink",
         "HandleModifiedItemClick",
         "DataProviderMixin",
-        "TurnerTech_Tags"
+        "TurnerTech_Tags",
+        "CreateFromMixins",
+        "print",
+        "CallbackRegistryMixin",
+        "GameTooltip",
+        "_G",
+        "type",
+        "IsAltKeyDown",
+        "C_Container",
+        "GetMouseButtonClicked",
+        "GetItemInfoInstant"
+    ],
+    "Lua.workspace.library": [
+        "."
     ]
 }
