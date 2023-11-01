@@ -50,7 +50,7 @@ function TagListDataProviderMixin:InsertTag(guid, label)
         self:InsertAtIndex(tag, idx)
         return tag
     else
-        self:w(tag)
+        self:Insert(tag)
         return tag
     end
 end

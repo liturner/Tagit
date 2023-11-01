@@ -36,7 +36,7 @@ end
 -- and passes the ars on to "NewTag"
 local function SlashNewTag(argString)
     local args = Addon.Util:SplitArgs(argString)
-    return TurnerTech_Tags:InsertTag(args[1], args[2])
+    return TurnerTech_Tags:CreateTag(args[1], args[2])
 end
 
 local function RegisterAllBagSlotsForOnClick()
