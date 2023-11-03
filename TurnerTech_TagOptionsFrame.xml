@@ -35,7 +35,7 @@
                 </Anchors>
                 <Size x="80" y="20"/>
             </Button>
-            <Frame parentKey="TestListView" inherits="GuildbookWrathEraWidgetsListviewTemplate,InsetFrameTemplate">
+            <Frame parentKey="TestListView" inherits="TagitListviewTemplate,InsetFrameTemplate">
                 <Anchors>
                     <Anchor point="TOPLEFT" relativeKey="$parent.AddKeyEditBox" relativePoint="BOTTOMLEFT" x="0" y="0"/>
                 </Anchors>

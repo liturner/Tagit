@@ -5,7 +5,7 @@
     
     <Script file="TurnerTech_TagList.lua" />
 
-    <Frame name = "GuildbookWrathEraWidgetsListviewTemplate" mixin="GuildbookWrathEraWidgetsListviewMixin" virtual="true">
+    <Frame name="TagitListviewTemplate" mixin="TagitListviewMixin" virtual="true">
         <Frames>
             <Frame parentKey="scrollBox" inherits="WowScrollBoxList"/>
             <EventFrame parentKey="scrollBar" inherits="WowTrimScrollBar">

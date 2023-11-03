@@ -1,6 +1,6 @@
-GuildbookWrathEraWidgetsListviewMixin = {}
+TagitListviewMixin = {}
 
-function GuildbookWrathEraWidgetsListviewMixin:OnLoad()
+function TagitListviewMixin:OnLoad()
     self.scrollView = CreateScrollBoxListLinearView();
 
     ---height is defined in the xml keyValues
@@ -26,7 +26,7 @@ function GuildbookWrathEraWidgetsListviewMixin:OnLoad()
     ScrollUtil.AddManagedScrollBarVisibilityBehavior(self.scrollBox, self.scrollBar, anchorsWithBar, anchorsWithoutBar);
 end
 
-function GuildbookWrathEraWidgetsListviewMixin:OnElementInitialize(element, elementData, isNew)
+function TagitListviewMixin:OnElementInitialize(element, elementData, isNew)
     print("element: "..tostring(element))
     print("elementData: "..tostring(elementData))
     print("isNew: "..tostring(isNew))
@@ -36,14 +36,14 @@ function GuildbookWrathEraWidgetsListviewMixin:OnElementInitialize(element, elem
     element:SetText(elementData.Label)
 end
 
-function GuildbookWrathEraWidgetsListviewMixin:OnElementReset(element)
+function TagitListviewMixin:OnElementReset(element)
     --element:ResetDataBinding()
 end
 
-function GuildbookWrathEraWidgetsListviewMixin:GetDataProvider()
+function TagitListviewMixin:GetDataProvider()
     return self.scrollView:GetDataProvider();
 end
 
-function GuildbookWrathEraWidgetsListviewMixin:SetDataProvider(dataProvider)
+function TagitListviewMixin:SetDataProvider(dataProvider)
     self.scrollView:SetDataProvider(dataProvider);
 end
