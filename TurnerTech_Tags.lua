@@ -140,6 +140,12 @@ function TagitAddonMixin:CreateTag(label, labelID)
     return tag
 end
 
+---Returns an enumerator to the underlying Tag list. See Blizzard code "DataProviderMixin:EnumerateEntireRange()"
+---@return table Enumerator, table tbl, number minIndex
+function TagitAddonMixin:EnumerateTags()
+    return Addon.TagList:EnumerateEntireRange()
+end
+
 ---Ads a Tag to an Item. This is a tollerant function which will create a tag
 ---where one does not exist. If an unknown Tag ID is used, then the item will
 ---still be tagged!
