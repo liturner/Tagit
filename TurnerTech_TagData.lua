@@ -74,8 +74,10 @@ function TagListDataProviderMixin:SetItemFromTag(item, tag)
     local itemID = GetItemInfoInstant(item)
     if(itemID and tag and tag.GUID) then
         Tagit_Items[itemID] = tag.GUID
+        return itemID, tag
     elseif(itemID and tag == nil) then
         Tagit_Items[itemID] = nil
+        return itemID, nil
     end
 end
 

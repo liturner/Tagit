@@ -30,6 +30,11 @@ local function OnPlayerEnteringWorld()
     end
     Addon.TagList:Init(Tagit_Tags)
     Tagit_Tags = Addon.TagList:GetCollection()
+
+    TurnerTech_Tags:RegisterCallback("Tag_Added", function(self, tagGUID) Addon.Util:Print("Tagit Tag_Added tag.GUID: "..tostring(tagGUID)) end, TurnerTech_Tags)
+    TurnerTech_Tags:RegisterCallback("Tag_Removed", function(self, tagGUID) Addon.Util:Print("Tagit Tag_Removed tag.GUID: "..tostring(tagGUID)) end, TurnerTech_Tags)
+    TurnerTech_Tags:RegisterCallback("Tag_ItemTagged", function(self, itemId, tagGUID) Addon.Util:Print("Tagit Tag_ItemTagged itemID: "..tostring(itemId)..", tag.GUID: "..tostring(tagGUID)) end, TurnerTech_Tags)
+    TurnerTech_Tags:RegisterCallback("Tag_ItemTagRemoved", function(self, itemId, tagGUID) Addon.Util:Print("Tagit Tag_ItemTagRemoved itemID: "..tostring(itemId)..", tag.GUID: "..tostring(tagGUID)) end, TurnerTech_Tags)
 end
 
 -- This is only intended for an incoming slash command. It splits by comma
@@ -80,8 +85,17 @@ function OnItemSelectedForMarking(itemID)
     local tagIndex = Addon.TagList:FindIndexByItemID(itemID)
     if(not tagIndex) then
         Addon.TagList:SetItemFromTagIndex(itemID, 1)
+        local tag = Addon.TagList:FindElementDataByItem(itemID)
+        if(tag) then
+            TurnerTech_Tags:TriggerEvent("Tag_ItemTagged", itemID, tag.GUID)
+        end
     else
+        TurnerTech_Tags:RemoveTag(itemID)
         Addon.TagList:SetItemFromTagIndex(itemID, tagIndex + 1)
+        local tag = Addon.TagList:FindElementDataByItem(itemID)
+        if(tag) then
+            TurnerTech_Tags:TriggerEvent("Tag_ItemTagged", itemID, tag.GUID)
+        end
     end
 end
 
@@ -112,7 +126,7 @@ function TagitAddonMixin:OnLoad()
     SlashCmdList["ADDTAG"] = function(label) SlashNewTag(label) end
 
     SLASH_REMOVETAG1 = "/removetag"
-    SlashCmdList["REMOVETAG"] = function(label) self:RemoveTagByLabel(label) end
+    SlashCmdList["REMOVETAG"] = function(label) self:DeleteTagsByLabel(label) end
 
     -- Callbacks / Events etc.
 
@@ -135,7 +149,7 @@ function TagitAddonMixin:CreateTag(label, labelID)
     end
     local tag = Addon.TagList:InsertTag(labelID, label)
     if(tag) then
-        self:TriggerEvent("Tag_Added", tag)
+        self:TriggerEvent("Tag_Added", tag.GUID)
     end
     return tag
 end
@@ -157,12 +171,21 @@ function TagitAddonMixin:TagItem(item, tagKey)
         tag = self:CreateTag(tagKey, nil)
     end
     if(tag) then
-        Addon.TagList:SetItemFromTag(item, tag)
+        TagitAddonMixin:RemoveTag(item)
+        local taggedItemID, tag = Addon.TagList:SetItemFromTag(item, tag)
+        if(taggedItemID) then
+            self:TriggerEvent("Tag_ItemTagged", taggedItemID, tag.GUID)
+        end
     end
 end
 
 function TagitAddonMixin:RemoveTag(item)
-    self:TagItem(item, nil)
+    local foundTag = Addon.TagList:FindElementDataByItem(item)
+    if(foundTag) then
+        self:TagItem(item, nil)
+        local itemID = GetItemInfoInstant(item)
+        self:TriggerEvent("Tag_ItemTagRemoved", itemID, foundTag.GUID)
+    end
 end
 
 ---Removes all tags with the provided label. This should only be one tag, but
@@ -172,7 +195,9 @@ end
 function TagitAddonMixin:DeleteTagsByLabel(label)
     local predicate = function(tag) return tag.Label == label end
     while(Addon.TagList:ContainsByPredicate(predicate)) do
+        local tag = Addon.TagList:FindElementDataByPredicate(predicate)
         Addon.TagList:RemoveByPredicate(predicate)
+        self:TriggerEvent("Tag_Removed", tag.GUID)
     end
 end
 
