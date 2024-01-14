@@ -12,4 +12,11 @@
         </Scripts>
     </Frame>
 
+    <Frame name="TurnerTech_TagDropDown" mixin="TagitDropDownMixin" inherits="UIDropDownMenuTemplate" id="1">
+       <Scripts>
+           <OnLoad method="OnLoad"/>
+           <OnHide method="OnHide"/>
+       </Scripts>
+   </Frame>
+
 </Ui>

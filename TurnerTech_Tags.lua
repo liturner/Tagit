@@ -57,6 +57,9 @@ local function RegisterAllBagSlotsForOnClick()
                         -- Trigger event if not nil
                         if GetMouseButtonClicked() == 'LeftButton' and itemID ~= nil then
                             OnItemSelectedForMarking(itemID)
+                        elseif GetMouseButtonClicked() == 'RightButton' and itemID ~= nil  then
+                            TurnerTech_TagDropDown:SetItemID(itemID)
+                            ToggleDropDownMenu(1, nil, TurnerTech_TagDropDown, _G['ContainerFrame'..b..'Item'..s], 0, 0)
                         end
                     end
                 end)
@@ -171,7 +174,7 @@ function TagitAddonMixin:TagItem(item, tagKey)
         tag = self:CreateTag(tagKey, nil)
     end
     if(tag) then
-        TagitAddonMixin:RemoveTag(item)
+        self:RemoveTag(item)
         local taggedItemID, tag = Addon.TagList:SetItemFromTag(item, tag)
         if(taggedItemID) then
             self:TriggerEvent("Tag_ItemTagged", taggedItemID, tag.GUID)
@@ -182,7 +185,7 @@ end
 function TagitAddonMixin:RemoveTag(item)
     local foundTag = Addon.TagList:FindElementDataByItem(item)
     if(foundTag) then
-        self:TagItem(item, nil)
+        Addon.TagList:SetItemFromTag(item, nil)
         local itemID = GetItemInfoInstant(item)
         self:TriggerEvent("Tag_ItemTagRemoved", itemID, foundTag.GUID)
     end
@@ -213,6 +216,9 @@ function TagitAddonMixin:FindTag(key)
     if(not foundTag) then
         foundTag = Addon.TagList:FindElementDataByTagLabel(key)
     end
+    if(not foundTag and type(key) == "table" and key.GUID ~= nil) then
+        foundTag = Addon.TagList:FindElementDataByTagGUID(key.GUID)
+    end
     if(not foundTag) then
         foundTag = Addon.TagList:FindElementDataByItem(key)
     end
@@ -222,4 +228,58 @@ function TagitAddonMixin:FindTag(key)
     return foundTag
 end
 
+function TagitAddonMixin:IsTagged(item, tag)
 
+end
+
+-- TurnerTech_TagsDropDown
+
+TagitDropDownMixin = {}
+
+function TagitDropDownMixin:OnLoad()
+    UIDropDownMenu_Initialize(self, self.Init, "MENU")
+end
+
+function TagitDropDownMixin:OnHide()
+    TagitDropDownMixin:ClearItemID()
+end
+
+function TagitDropDownMixin:SetItemID(itemID)
+    Addon.Util:Print("TagitDropDownMixin:SetItemID(" .. itemID .. ")")
+    self.itemID = itemID;
+end
+
+function TagitDropDownMixin:ClearItemID()
+    Addon.Util:Print("TagitDropDownMixin:ClearItemID()")
+    self.itemID = nil;
+end
+
+function TagitDropDownMixin.Init(dropDown, level, menuList)
+    Addon.Util:Print("TagitDropDownMixin.Init()")
+
+    local itemTag = TurnerTech_Tags:FindTag(TurnerTech_TagDropDown.itemID)
+
+    for _, tag in Addon.TagList:EnumerateEntireRange() do
+        Addon.Util:Print("--")
+        local info      = {};
+        info.text       = tag.Label;
+        info.func       = TurnerTech_TagDropDown.OnSelect
+        info.arg1       = tag
+        info.checked    = itemTag ~= nil and tag.GUID == itemTag.GUID
+        info.arg2       = TurnerTech_TagDropDown.itemID
+        
+        UIDropDownMenu_AddButton(info);
+    end
+end
+
+function TagitDropDownMixin:OnSelect(tag, item, checked)
+    Addon.Util:Print("TagitDropDownMixin:OnSelect( , , "..tostring(checked)..")")
+
+    if(not checked) then
+        TurnerTech_Tags:TagItem(item, tag)
+    else
+        TurnerTech_Tags:RemoveTag(item)
+    end
+
+    TurnerTech_TagDropDown:ClearItemID()
+end

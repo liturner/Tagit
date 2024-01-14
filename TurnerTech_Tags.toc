@@ -1,4 +1,4 @@
-## Interface: 30403
+## Interface: 11500
 ## Title: Tagit
 ## Author: TurnerTech
 ## Version: 1.0.3

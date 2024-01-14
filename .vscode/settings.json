@@ -24,7 +24,13 @@
         "IsAltKeyDown",
         "C_Container",
         "GetMouseButtonClicked",
-        "GetItemInfoInstant"
+        "GetItemInfoInstant",
+        "UIDropDownMenu_AddButton",
+        "ToggleDropDownMenu",
+        "UIDropDownMenu_Initialize",
+        "UIParentLoadAddOn",
+        "DevTools_Dump",
+        "TurnerTech_TagDropDown"
     ],
     "Lua.workspace.library": [
         "."

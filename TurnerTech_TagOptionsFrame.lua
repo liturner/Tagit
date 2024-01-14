@@ -14,7 +14,7 @@ function TagitOptionsMixin:OnLoad()
 end
 
 function TagitOptionsMixin:OnAddClicked()
-
+	TurnerTech_Tags:CreateTag(self.AddKeyEditBox:GetText())
 end
 
 function TagitOptionsMixin:OnTextChanged(editBox)

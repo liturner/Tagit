@@ -1,7 +1,11 @@
 local name, addon = ...
 
-addon.Debug = false
+addon.Debug = true
 addon.Util = {}
+
+if(addon.Debug) then
+	UIParentLoadAddOn("Blizzard_DebugTools");
+end
 
 function addon.Util:SplitArgs(argString)
     local args = {}
